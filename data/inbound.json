@@ -1,30 +1,24 @@
 {
   "fields": {
-    "veiculosRecebidos": "",
+    "veiculosRecebidos": "8",
     "pacotesRecebidos": "",
     "absInbound": "",
-    "volumeTotalRecebido": "202030",
-    "fmRecebidos": "3455",
-    "lhRecebimento": "3455O",
-    "lhPendente": "2",
-    "totalDocasAtivas": "1",
+    "volumeTotalRecebido": "",
+    "fmRecebidos": "",
+    "lhRecebimento": "",
+    "lhPendente": "",
+    "totalDocasAtivas": "",
     "status5SInbound": ""
   },
   "lists": {
     "list-ageCritico": [],
     "list-ruasPrioritarias": [],
-    "list-ltsRecebidas": [
-      "LTQOEORT TN"
-    ],
-    "list-docas": [
-      "45"
-    ],
-    "list-ruasVazias": [
-      "12"
-    ],
+    "list-ltsRecebidas": [],
+    "list-docas": [],
+    "list-ruasVazias": [],
     "list-ruasAtreladas": [],
     "list-ruasPrioridadeAGE": [],
     "list-pendenciasInbound": []
   },
-  "salvoEm": "2026-06-27T14:41:36.344Z"
+  "salvoEm": "2026-06-27T14:45:13.707Z"
 }
