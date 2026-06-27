@@ -1,8 +1,8 @@
 {
   "fields": {
-    "veiculosRecebidos": "12",
-    "pacotesRecebidos": "12",
-    "absInbound": "3,1",
+    "veiculosRecebidos": "",
+    "pacotesRecebidos": "",
+    "absInbound": "",
     "volumeTotalRecebido": "202030",
     "fmRecebidos": "3455",
     "lhRecebimento": "3455O",
@@ -11,9 +11,7 @@
     "status5SInbound": ""
   },
   "lists": {
-    "list-ageCritico": [
-      "34"
-    ],
+    "list-ageCritico": [],
     "list-ruasPrioritarias": [],
     "list-ltsRecebidas": [
       "LTQOEORT TN"
@@ -28,5 +26,5 @@
     "list-ruasPrioridadeAGE": [],
     "list-pendenciasInbound": []
   },
-  "salvoEm": "2026-06-27T14:19:51.397Z"
+  "salvoEm": "2026-06-27T14:21:55.240Z"
 }
