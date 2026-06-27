@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outbound — Passagem de Turno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="eyebrow">SETOR</span><h1>📦 Outbound</h1></div>
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="actions"><a class="btn-secondary" href="index.html">← Painel Geral</a></div>
+  </div>
+</div>
+
+<div class="layout-single">
+
+  <!-- CONEXÃO COM O GITHUB -->
+  <div class="card sector-config">
+    <div class="card-head"><span class="dot config"></span><h2>Conexão com o GitHub</h2></div>
+    <div class="card-body">
+      <p class="hint-text">Preencha uma vez — o repositório e o token ficam salvos neste navegador e valem para todas as páginas (setores) da passagem de turno.</p>
+      <div class="field-grid">
+        <div class="field"><label>Repositório (owner/repo)</label><input type="text" id="ghRepo" placeholder="ex: dario/passagem-turno"></div>
+        <div class="field"><label>Branch</label><input type="text" id="ghBranch" placeholder="main"></div>
+        <div class="field"><label>Personal Access Token</label><input type="password" id="ghToken" placeholder="ghp_..."></div>
+      </div>
+      <div class="actions">
+        <button class="btn-secondary" onclick="carregarSetorDoGithub(SECTOR,'setorStatus')">Recarregar dados salvos</button>
+        <button class="btn-primary" onclick="salvarSetorNoGithub(SECTOR,'setorStatus')">💾 Salvar Setor Outbound</button>
+        <button class="btn-danger" onclick="limparSetor(SECTOR,'setorStatus')">Limpar Campos</button>
+      </div>
+      <p id="setorStatus" class="status-text"></p>
+    </div>
+  </div>
+
+  <!-- FORMULÁRIO DO SETOR -->
+  <div class="card sector-outbound form-col">
+    <div class="card-head"><span class="dot outbound"></span><h2>Dados do Turno — Outbound</h2></div>
+    <div class="card-body">
+
+      <div class="subsection">
+        <div class="subsection-title">Painel</div>
+        <div class="field-grid">
+          <div class="field"><label>Pacotes Expedidos</label><input type="number" id="pacotesExpedidos" class="shift-field"></div>
+          <div class="field"><label>LTs Expedidas (qtd.)</label><input type="number" id="ltsExpedidasQtd" class="shift-field"></div>
+          <div class="field"><label>Faltas (Outbound)</label><input type="number" min="0" id="faltasOutbound" class="shift-field" placeholder="Ex: 1"></div>
+          <div class="field"><label>Presentes (Outbound)</label><input type="number" min="0" id="presentesOutbound" class="shift-field" placeholder="Ex: 10"></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Expedição</div>
+        <label style="font-size:12px;color:var(--text-dim);">Lista de LTs Expedidas</label>
+        <div class="dyn-list" id="list-ltsExpedidas"></div>
+        <button type="button" class="btn-add" onclick="addRow('list-ltsExpedidas',[{key:'value',placeholder:'Código da LT'}])">+ Adicionar</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Programação de Veículos</div>
+        <div class="field-grid">
+          <div class="field"><label>Programados</label><input type="number" id="veiculosProgramados" class="shift-field"></div>
+          <div class="field"><label>Carregados</label><input type="number" id="veiculosCarregados" class="shift-field"></div>
+          <div class="field"><label>Cancelados</label><input type="number" id="veiculosCancelados" class="shift-field"></div>
+          <div class="field"><label>No Show</label><input type="number" id="veiculosNoShow" class="shift-field"></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Programação de LTs</div>
+        <div class="field-grid">
+          <div class="field"><label>LTs Carregadas</label><input type="number" id="ltsCarregadas" class="shift-field"></div>
+          <div class="field"><label>LTs Canceladas</label><input type="number" id="ltsCanceladas" class="shift-field"></div>
+          <div class="field"><label>LTs No Show</label><input type="number" id="ltsNoShow" class="shift-field"></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="subsection">
+        <div class="subsection-title">CPT Perdidos</div>
+        <div class="dyn-list" id="list-cptPerdidos"></div>
+        <button type="button" class="btn-add" onclick="addRow('list-cptPerdidos',[{key:'janela',placeholder:'Janela (ex: 14h-16h)'},{key:'motivo',placeholder:'Motivo'}])">+ Adicionar</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Pendências — Próximo Turno</div>
+        <div class="dyn-list" id="list-pendenciasOutbound"></div>
+        <button type="button" class="btn-add" onclick="addRow('list-pendenciasOutbound',[{key:'value',placeholder:'Descreva a pendência'}])">+ Adicionar</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-primary" onclick="salvarSetorNoGithub(SECTOR,'setorStatus')">💾 Salvar Setor Outbound</button>
+  </div>
+
+</div>
+
+<footer class="hint">
+  Este formulário salva apenas os dados do setor Outbound (arquivo <code>data/outbound.json</code>). O relatório final, combinando todos os setores, é montado e enviado no <a href="index.html">Painel Geral</a>.
+</footer>
+
+<script src="shared.js"></script>
+<script>
+const SECTOR = {
+  path: 'data/outbound.json',
+  label: 'Outbound',
+  fields: [
+    'pacotesExpedidos','ltsExpedidasQtd','faltasOutbound','presentesOutbound',
+    'veiculosProgramados','veiculosCarregados','veiculosCancelados','veiculosNoShow',
+    'ltsCarregadas','ltsCanceladas','ltsNoShow'
+  ],
+  lists: {
+    'list-ltsExpedidas': [{key:'value',placeholder:'Código da LT'}],
+    'list-cptPerdidos': [{key:'janela',placeholder:'Janela (ex: 14h-16h)'},{key:'motivo',placeholder:'Motivo'}],
+    'list-pendenciasOutbound': [{key:'value',placeholder:'Descreva a pendência'}]
+  }
+};
+
+window.addEventListener('DOMContentLoaded', () => initSectorPage(SECTOR));
+</script>
+</body>
+</html>

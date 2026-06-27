@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorting — Passagem de Turno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="eyebrow">SETOR</span><h1>⚙️ Sorting (Esteiras)</h1></div>
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="actions"><a class="btn-secondary" href="index.html">← Painel Geral</a></div>
+  </div>
+</div>
+
+<div class="layout-single">
+
+  <!-- CONEXÃO COM O GITHUB -->
+  <div class="card sector-config">
+    <div class="card-head"><span class="dot config"></span><h2>Conexão com o GitHub</h2></div>
+    <div class="card-body">
+      <p class="hint-text">Preencha uma vez — o repositório e o token ficam salvos neste navegador e valem para todas as páginas (setores) da passagem de turno.</p>
+      <div class="field-grid">
+        <div class="field"><label>Repositório (owner/repo)</label><input type="text" id="ghRepo" placeholder="ex: dario/passagem-turno"></div>
+        <div class="field"><label>Branch</label><input type="text" id="ghBranch" placeholder="main"></div>
+        <div class="field"><label>Personal Access Token</label><input type="password" id="ghToken" placeholder="ghp_..."></div>
+      </div>
+      <div class="actions">
+        <button class="btn-secondary" onclick="carregarSetorDoGithub(SECTOR,'setorStatus')">Recarregar dados salvos</button>
+        <button class="btn-primary" onclick="salvarSetorNoGithub(SECTOR,'setorStatus')">💾 Salvar Setor Sorting</button>
+        <button class="btn-danger" onclick="limparSetor(SECTOR,'setorStatus')">Limpar Campos</button>
+      </div>
+      <p id="setorStatus" class="status-text"></p>
+    </div>
+  </div>
+
+  <!-- FORMULÁRIO DO SETOR -->
+  <div class="card sector-sorting form-col">
+    <div class="card-head"><span class="dot sorting"></span><h2>Dados do Turno — Sorting</h2></div>
+    <div class="card-body">
+
+      <div class="subsection">
+        <div class="subsection-title">Painel</div>
+        <div class="field-grid">
+          <div class="field"><label>Pacotes Processados</label><input type="number" id="pacotesProcessados" class="shift-field"></div>
+          <div class="field"><label>Faltas (Sorting)</label><input type="number" min="0" id="faltasSorting" class="shift-field" placeholder="Ex: 2"></div>
+          <div class="field"><label>Presentes (Sorting)</label><input type="number" min="0" id="presentesSorting" class="shift-field" placeholder="Ex: 18"></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="cols-2">
+        <div class="esteira-box">
+          <h3>Esteira Lona</h3>
+          <div class="field"><label>Status</label>
+            <select id="statusLona" class="shift-field">
+              <option value="">—</option>
+              <option>Operando</option>
+              <option>Parada</option>
+              <option>Manutenção</option>
+              <option>Lentidão</option>
+            </select>
+          </div>
+          <div class="field"><label>ABS</label><input type="text" id="absLona" class="shift-field"></div>
+          <div class="field"><label>Qtd. Prevista</label><input type="text" id="qtdPrevistaLona" class="shift-field"></div>
+          <div class="field"><label>Qtd. Processada</label><input type="text" id="qtdProcessadaLona" class="shift-field"></div>
+          <div class="field"><label>Buffer de Shuttle</label><input type="text" id="bufferShuttleLona" class="shift-field"></div>
+          <div class="field"><label>Qtd. Ruas Processadas</label><input type="text" id="qtdRuasLona" class="shift-field"></div>
+          <div class="field"><label>5S da Station</label><input type="text" id="status5SLona" class="shift-field"></div>
+        </div>
+
+        <div class="esteira-box">
+          <h3>Esteira Termoplástica</h3>
+          <div class="field"><label>Status</label>
+            <select id="statusTerm" class="shift-field">
+              <option value="">—</option>
+              <option>Operando</option>
+              <option>Parada</option>
+              <option>Manutenção</option>
+              <option>Lentidão</option>
+            </select>
+          </div>
+          <div class="field"><label>ABS</label><input type="text" id="absTerm" class="shift-field"></div>
+          <div class="field"><label>Qtd. Prevista</label><input type="text" id="qtdPrevistaTerm" class="shift-field"></div>
+          <div class="field"><label>Qtd. Processada</label><input type="text" id="qtdProcessadaTerm" class="shift-field"></div>
+          <div class="field"><label>Buffer de Shuttle</label><input type="text" id="bufferShuttleTerm" class="shift-field"></div>
+          <div class="field"><label>Qtd. Ruas Processadas</label><input type="text" id="qtdRuasTerm" class="shift-field"></div>
+          <div class="field"><label>5S da Station</label><input type="text" id="status5STerm" class="shift-field"></div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Pendências do Setor</div>
+        <div class="dyn-list" id="list-pendenciasSorting"></div>
+        <button type="button" class="btn-add" onclick="addRow('list-pendenciasSorting',[{key:'value',placeholder:'Descreva a pendência'}])">+ Adicionar</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="subsection">
+        <div class="subsection-title">Observações do Sorting</div>
+        <div class="field"><textarea id="obsSorting" class="shift-field" rows="3"></textarea></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-primary" onclick="salvarSetorNoGithub(SECTOR,'setorStatus')">💾 Salvar Setor Sorting</button>
+  </div>
+
+</div>
+
+<footer class="hint">
+  Este formulário salva apenas os dados do setor Sorting (arquivo <code>data/sorting.json</code>). O relatório final, combinando todos os setores, é montado e enviado no <a href="index.html">Painel Geral</a>.
+</footer>
+
+<script src="shared.js"></script>
+<script>
+const SECTOR = {
+  path: 'data/sorting.json',
+  label: 'Sorting',
+  fields: [
+    'pacotesProcessados','faltasSorting','presentesSorting',
+    'statusLona','absLona','qtdPrevistaLona','qtdProcessadaLona','bufferShuttleLona','qtdRuasLona','status5SLona',
+    'statusTerm','absTerm','qtdPrevistaTerm','qtdProcessadaTerm','bufferShuttleTerm','qtdRuasTerm','status5STerm',
+    'obsSorting'
+  ],
+  lists: {
+    'list-pendenciasSorting': [{key:'value',placeholder:'Descreva a pendência'}]
+  }
+};
+
+window.addEventListener('DOMContentLoaded', () => initSectorPage(SECTOR));
+</script>
+</body>
+</html>

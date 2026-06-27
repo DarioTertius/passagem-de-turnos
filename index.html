@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Passagem de Turno — Painel Geral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand"><span class="eyebrow">OPERAÇÃO GERAL</span><h1>Passagem de Turno — Painel</h1></div>
+    <div class="clock" id="clock">--:--:--</div>
+  </div>
+</div>
+
+<div class="layout-single">
+
+  <!-- CONEXÃO COM O GITHUB -->
+  <div class="card sector-config">
+    <div class="card-head"><span class="dot config"></span><h2>Conexão com o GitHub</h2></div>
+    <div class="card-body">
+      <p class="hint-text">Preencha uma vez — vale para este painel e para as páginas de cada setor (mesmo navegador). Veja o <code>README.md</code> do pacote para criar o token.</p>
+      <div class="field-grid">
+        <div class="field"><label>Repositório (owner/repo)</label><input type="text" id="ghRepo" placeholder="ex: dario/passagem-turno"></div>
+        <div class="field"><label>Branch</label><input type="text" id="ghBranch" placeholder="main"></div>
+        <div class="field"><label>Personal Access Token</label><input type="password" id="ghToken" placeholder="ghp_... (salvo só neste navegador)"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATUS DOS SETORES -->
+  <div class="card sector-config">
+    <div class="card-head"><span class="dot config"></span><h2>Status dos Setores</h2></div>
+    <div class="card-body">
+      <p class="hint-text">Cada setor preenche e salva o próprio formulário. Aqui você vê se já foi salvo e quando.</p>
+      <div class="hub-grid" style="padding:0;margin:0;" id="sectorCards">
+        <a class="sector-card pending geral" href="geral.html">
+          <div class="sc-title">🗒️ Geral / Liderança</div>
+          <div class="sc-status" id="status-geral">Verificando...</div>
+        </a>
+        <a class="sector-card pending inbound" href="inbound.html">
+          <div class="sc-title">📥 Inbound</div>
+          <div class="sc-status" id="status-inbound">Verificando...</div>
+        </a>
+        <a class="sector-card pending sorting" href="sorting.html">
+          <div class="sc-title">⚙️ Sorting</div>
+          <div class="sc-status" id="status-sorting">Verificando...</div>
+        </a>
+        <a class="sector-card pending outbound" href="outbound.html">
+          <div class="sc-title">📦 Outbound</div>
+          <div class="sc-status" id="status-outbound">Verificando...</div>
+        </a>
+      </div>
+      <button class="btn-secondary" style="align-self:flex-start;" onclick="atualizarStatusSetores()">🔄 Atualizar Status</button>
+    </div>
+  </div>
+
+  <!-- RELATÓRIO FINAL -->
+  <div class="card sector-dados">
+    <div class="card-head"><span class="dot dados"></span><h2>Relatório Final</h2></div>
+    <div class="card-body">
+      <p class="hint-text">Junta os dados já salvos dos 4 setores acima em um único relatório de texto, igual ao formato de sempre.</p>
+      <div class="actions">
+        <button class="btn-secondary" onclick="gerarRelatorioFinal()">🧩 Gerar Relatório (Preview)</button>
+        <button class="btn-secondary" onclick="copyReport()">Copiar Relatório</button>
+        <button class="btn-primary" onclick="enviarAgoraViaGithub()">📨 Enviar Agora via GitHub Actions</button>
+      </div>
+      <p id="relatorioStatus" class="status-text"></p>
+
+      <div class="terminal">
+        <div class="terminal-head">
+          <span class="tdot"></span><span class="tdot"></span><span class="tdot"></span>
+          <span class="terminal-name">relatorio_passagem_turno.txt</span>
+        </div>
+        <div class="terminal-body">
+          <div id="previewEmpty">Aguardando geração do relatório</div>
+          <pre id="reportOutput"></pre>
+        </div>
+        <div class="preview-meta" id="previewMeta"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AGENDAMENTO AUTOMÁTICO -->
+  <div class="card sector-config">
+    <div class="card-head"><span class="dot config"></span><h2>Agendamento Automático (GitHub Actions)</h2></div>
+    <div class="card-body">
+      <p class="hint-text">
+        O workflow do GitHub Actions verifica a cada ~10 minutos (fuso de Fortaleza/CE) se já bateu o horário abaixo
+        e, se sim, envia o e-mail por SMTP automaticamente — usando o que estiver salvo em <code>data/relatorio-atual.json</code>
+        no momento. Para o agendamento valer, gere e salve o relatório final (botão acima) antes do horário configurado.
+      </p>
+      <div class="field-grid">
+        <div class="field"><label>Horário de Envio Automático</label><input type="time" id="horarioEnvio"></div>
+        <div class="field" style="flex-direction:row;align-items:center;gap:8px;">
+          <input type="checkbox" id="habilitarEnvioAuto" style="width:auto;">
+          <label style="margin:0;">Habilitar envio automático</label>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn-secondary" onclick="carregarAgendamento()">Recarregar Agendamento</button>
+        <button class="btn-primary" onclick="salvarAgendamentoNoGithub()">Salvar Agendamento</button>
+      </div>
+      <p id="agendamentoStatus" class="status-text"></p>
+    </div>
+  </div>
+
+</div>
+
+<footer class="hint">
+  Cada setor preenche o próprio formulário (links acima) e salva separadamente — sem conflito entre eles. Este painel só lê o que já foi salvo, monta o relatório final e dispara o envio. Veja o <code>README.md</code> do pacote para configurar o backend (SMTP) e o token do GitHub.
+</footer>
+
+<script src="shared.js"></script>
+<script>
+/* ===================== Montagem do relatório final, a partir dos 4 setores ===================== */
+function g(obj, id){ return (obj && obj.fields && obj.fields[id]) || ''; }
+function gl(obj, listId){ return (obj && obj.lists && obj.lists[listId]) || []; }
+
+function buildReportFromSectors(geral, inbound, sorting, outbound){
+  geral = geral || {}; inbound = inbound || {}; sorting = sorting || {}; outbound = outbound || {};
+  const DIV = '━'.repeat(32);
+
+  const data = formatarData(g(geral,'data'));
+  const turno = g(geral,'turno');
+  const respT1 = g(geral,'respT1');
+  const respT2 = g(geral,'respT2');
+  const absTotal = g(geral,'faltasTotal');
+  const presentesTotal = g(geral,'presentesTotal');
+
+  const veiculosRecebidos = g(inbound,'veiculosRecebidos');
+  const pacotesRecebidos = g(inbound,'pacotesRecebidos');
+  const pacotesProcessados = g(sorting,'pacotesProcessados');
+  const pacotesExpedidos = g(outbound,'pacotesExpedidos');
+  const ltsExpedidasQtd = g(outbound,'ltsExpedidasQtd');
+
+  const absInbound = g(inbound,'faltasInbound');
+  const presentesInbound = g(inbound,'presentesInbound');
+  const absEsteiras = g(sorting,'faltasSorting');
+  const presentesSorting = g(sorting,'presentesSorting');
+  const absOutbound = g(outbound,'faltasOutbound');
+  const presentesOutbound = g(outbound,'presentesOutbound');
+
+  const ageCritico = gl(inbound,'list-ageCritico');
+  const ruasPrioritarias = gl(inbound,'list-ruasPrioritarias');
+  const ltsRecebidas = gl(inbound,'list-ltsRecebidas');
+  const volumeTotalRecebido = g(inbound,'volumeTotalRecebido');
+  const fmRecebidos = g(inbound,'fmRecebidos');
+  const lhRecebimento = g(inbound,'lhRecebimento');
+  const lhPendente = g(inbound,'lhPendente');
+  const docas = gl(inbound,'list-docas');
+  const totalDocasAtivas = g(inbound,'totalDocasAtivas');
+  const ruasVazias = gl(inbound,'list-ruasVazias');
+  const ruasAtreladas = gl(inbound,'list-ruasAtreladas');
+  const ruasPrioridadeAGE = gl(inbound,'list-ruasPrioridadeAGE');
+  const status5SInbound = g(inbound,'status5SInbound');
+
+  const statusLona = g(sorting,'statusLona');
+  const absLona = g(sorting,'absLona');
+  const qtdPrevistaLona = g(sorting,'qtdPrevistaLona');
+  const qtdProcessadaLona = g(sorting,'qtdProcessadaLona');
+  const bufferShuttleLona = g(sorting,'bufferShuttleLona');
+  const qtdRuasLona = g(sorting,'qtdRuasLona');
+  const status5SLona = g(sorting,'status5SLona');
+
+  const statusTerm = g(sorting,'statusTerm');
+  const absTerm = g(sorting,'absTerm');
+  const qtdPrevistaTerm = g(sorting,'qtdPrevistaTerm');
+  const qtdProcessadaTerm = g(sorting,'qtdProcessadaTerm');
+  const bufferShuttleTerm = g(sorting,'bufferShuttleTerm');
+  const qtdRuasTerm = g(sorting,'qtdRuasTerm');
+  const status5STerm = g(sorting,'status5STerm');
+  const obsSorting = g(sorting,'obsSorting');
+
+  const ltsExpedidas = gl(outbound,'list-ltsExpedidas');
+  const veiculosProgramados = g(outbound,'veiculosProgramados');
+  const veiculosCarregados = g(outbound,'veiculosCarregados');
+  const veiculosCancelados = g(outbound,'veiculosCancelados');
+  const veiculosNoShow = g(outbound,'veiculosNoShow');
+  const ltsCarregadas = g(outbound,'ltsCarregadas');
+  const ltsCanceladas = g(outbound,'ltsCanceladas');
+  const ltsNoShow = g(outbound,'ltsNoShow');
+  const cptPerdidos = gl(outbound,'list-cptPerdidos');
+
+  const pendenciasInbound = gl(inbound,'list-pendenciasInbound');
+  const pendenciasSorting = gl(sorting,'list-pendenciasSorting');
+  const pendenciasOutbound = gl(outbound,'list-pendenciasOutbound');
+
+  const planosAcao = gl(geral,'list-planosAcao');
+  const incidentesHSE = gl(geral,'list-incidentesHSE');
+  const observacoesGerais = g(geral,'observacoesGerais');
+
+  const cptText = cptPerdidos.length
+    ? cptPerdidos.map(c => `└ Janela: ${nz(c.janela)} | Motivo: ${nz(c.motivo)}`).join('\n')
+    : '└ Nenhum CPT perdido';
+
+  const hseText = incidentesHSE.length
+    ? incidentesHSE.map(h => `▸ Ocorrência: ${nz(h.ocorrencia)} | Área: ${nz(h.area)} | Ação: ${nz(h.acao)}`).join('\n')
+    : '▸ Nenhum incidente registrado';
+
+  return `${DIV}
+📋 RELATÓRIO DE PASSAGEM DE TURNO
+          OPERAÇÃO GERAL
+${DIV}
+
+📅 Data: ${nz(data)}
+🔄 Turno: ${nz(turno)}
+👤 Responsável T1: ${nz(respT1)}
+👤 Responsável T2: ${nz(respT2)}
+
+${DIV}
+
+📊 PAINEL DE PRODUTIVIDADE
+
+📥 INBOUND
+✦ Veículos recebidos: ${nz(veiculosRecebidos)}
+✦ Pacotes recebidos: ${nz(pacotesRecebidos)}
+
+⚙️ ESTEIRAS
+✦ Pacotes processados (geral): ${nz(pacotesProcessados)}
+
+📤 OUTBOUND
+✦ Pacotes expedidos: ${nz(pacotesExpedidos)}
+✦ LTs expedidas: ${nz(ltsExpedidasQtd)}
+
+${DIV}
+
+🚫 FALTAS E PRESENÇA DO TURNO
+
+✦ Total — Faltas: ${nz(absTotal)} | Presentes: ${nz(presentesTotal)}
+✦ Inbound — Faltas: ${nz(absInbound)} | Presentes: ${nz(presentesInbound)}
+✦ Sorting — Faltas: ${nz(absEsteiras)} | Presentes: ${nz(presentesSorting)}
+✦ Outbound — Faltas: ${nz(absOutbound)} | Presentes: ${nz(presentesOutbound)}
+
+${DIV}
+
+1️⃣ INBOUND – RECEBIMENTO
+
+🔴 FIFO – PRIORIDADES DE PROCESSAMENTO
+🟠 AGE Crítico:
+${listBlock(ageCritico,'Nenhuma rua em AGE crítico')}
+🟠 Ruas Prioritárias:
+${listBlock(ruasPrioritarias,'Nenhuma rua prioritária')}
+
+- LTs Recebidas:
+${listBlock(ltsRecebidas,'Nenhuma LT recebida')}
+- Volume Total Recebido: ${nz(volumeTotalRecebido)}
+- FM Recebidos: ${nz(fmRecebidos)}
+- LH em Recebimento: ${nz(lhRecebimento)}
+- LH Pendente de Recebimento: ${nz(lhPendente)}
+
+📦 Docas em Operação:
+${bulletBlock(docas,'Nenhuma doca registrada')}
+Total de Docas Ativas: ${nz(totalDocasAtivas)}
+
+🟢 Ruas Vazias
+${listBlock(ruasVazias,'Nenhuma')}
+🟡 Ruas c/ Pacotes Atrelados
+${listBlock(ruasAtreladas,'Nenhuma')}
+🔴 Ruas Prioridade AGE
+${listBlock(ruasPrioridadeAGE,'Nenhuma')}
+
+5️⃣ 5S Inbound: ${nz(status5SInbound)}
+
+${DIV}
+
+2️⃣ SORTING – ESTEIRAS
+
+⚙️ ESTEIRA LONA ${nz(statusLona,'')}
+- ABS: ${nz(absLona)}
+- Qtd. Prevista: ${nz(qtdPrevistaLona)}
+- Qtd. Processada: ${nz(qtdProcessadaLona)}
+- Buffer de Shuttle: ${nz(bufferShuttleLona)}
+- Qtd. Ruas Processadas: ${nz(qtdRuasLona)}
+- 5S da Station: ${nz(status5SLona)}
+
+⚙️ ESTEIRA TERMOPLÁSTICA ${nz(statusTerm,'')}
+- ABS: ${nz(absTerm)}
+- Qtd. Prevista: ${nz(qtdPrevistaTerm)}
+- Qtd. Processada: ${nz(qtdProcessadaTerm)}
+- Buffer de Shuttle: ${nz(bufferShuttleTerm)}
+- Qtd. Ruas Processadas: ${nz(qtdRuasTerm)}
+- 5S da Station: ${nz(status5STerm)}
+
+📝 Observações do Sorting:
+${nz(obsSorting,'Nenhuma observação')}
+
+${DIV}
+
+3️⃣ OUTBOUND – EXPEDIÇÃO
+
+- Qtd. Pacotes Expedidos: ${nz(pacotesExpedidos)}
+- LTs Expedidas:
+${listBlock(ltsExpedidas,'Nenhuma LT expedida')}
+
+📦 PROGRAMAÇÃO DE VEÍCULOS
+▸ Programados: ${nz(veiculosProgramados)}
+▸ Carregados: ${nz(veiculosCarregados)}
+▸ Cancelados: ${nz(veiculosCancelados)}
+▸ No Show: ${nz(veiculosNoShow)}
+
+📋 PROGRAMAÇÃO DE LTs
+▸ LTs Carregadas: ${nz(ltsCarregadas)}
+▸ LTs Canceladas: ${nz(ltsCanceladas)}
+▸ LTs No Show: ${nz(ltsNoShow)}
+
+⏰ CPTs Perdidos
+${cptText}
+
+${DIV}
+
+⚠️ PENDÊNCIAS GERAIS – PRÓXIMO TURNO
+
+📥 Inbound:
+${bulletBlock(pendenciasInbound,'Nenhuma pendência')}
+
+⚙️ Sorting:
+${bulletBlock(pendenciasSorting,'Nenhuma pendência')}
+
+📤 Outbound:
+${bulletBlock(pendenciasOutbound,'Nenhuma pendência')}
+
+${DIV}
+
+🎯 PLANOS DE AÇÃO
+
+${bulletBlock(planosAcao,'Nenhum plano de ação registrado')}
+
+${DIV}
+
+🦺 INCIDENTES HSE
+
+${hseText}
+
+${DIV}
+
+📝 OBSERVAÇÕES GERAIS DO TURNO
+
+${nz(observacoesGerais,'Sem observações')}
+
+${DIV}
+
+✅ Passagem de turno concluída.
+T1 encerrado formalmente.
+
+${DIV}`;
+}
+
+/* ===================== Leitura dos 4 setores ===================== */
+async function lerTodosSetores(){
+  const { owner, repo, branch, token } = getGithubSettings();
+  const [geral, inbound, sorting, outbound] = await Promise.all([
+    ghGetJsonFile(owner, repo, 'data/geral.json', branch, token).catch(()=>null),
+    ghGetJsonFile(owner, repo, 'data/inbound.json', branch, token).catch(()=>null),
+    ghGetJsonFile(owner, repo, 'data/sorting.json', branch, token).catch(()=>null),
+    ghGetJsonFile(owner, repo, 'data/outbound.json', branch, token).catch(()=>null),
+  ]);
+  return { geral, inbound, sorting, outbound };
+}
+
+function tempoRelativo(iso){
+  if(!iso) return null;
+  const diffMin = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if(diffMin < 1) return 'agora mesmo';
+  if(diffMin < 60) return `há ${diffMin} min`;
+  const diffH = Math.round(diffMin / 60);
+  return `há ${diffH}h`;
+}
+
+async function atualizarStatusSetores(){
+  if(!ghConfigured()){
+    ['geral','inbound','sorting','outbound'].forEach(k => {
+      document.getElementById('status-'+k).textContent = 'Configure o repositório e o token acima.';
+    });
+    return;
+  }
+  ['geral','inbound','sorting','outbound'].forEach(k => {
+    document.getElementById('status-'+k).textContent = 'Verificando...';
+  });
+  const setores = await lerTodosSetores();
+  Object.entries(setores).forEach(([key, state])=>{
+    const cardEl = document.getElementById('status-'+key).closest('.sector-card');
+    const statusEl = document.getElementById('status-'+key);
+    if(state && state.salvoEm){
+      statusEl.textContent = '✓ Salvo ' + tempoRelativo(state.salvoEm) + ' (' + new Date(state.salvoEm).toLocaleString('pt-BR') + ')';
+      cardEl.classList.add('ok'); cardEl.classList.remove('pending');
+    } else {
+      statusEl.textContent = 'Ainda não salvo neste turno.';
+      cardEl.classList.add('pending'); cardEl.classList.remove('ok');
+    }
+  });
+}
+
+/* ===================== Geração / preview / cópia ===================== */
+let ultimoRelatorioGerado = '';
+
+async function gerarRelatorioFinal(){
+  if(!ghConfigured()){
+    setStatus('relatorioStatus', 'Configure o repositório e o token no topo da página primeiro.', true);
+    return null;
+  }
+  setStatus('relatorioStatus', 'Buscando dados salvos dos 4 setores...');
+  try{
+    const { geral, inbound, sorting, outbound } = await lerTodosSetores();
+    const texto = buildReportFromSectors(geral, inbound, sorting, outbound);
+    ultimoRelatorioGerado = texto;
+
+    const outputEl = document.getElementById('reportOutput');
+    outputEl.textContent = texto;
+    outputEl.style.display = 'block';
+    document.getElementById('previewEmpty').style.display = 'none';
+    document.getElementById('previewMeta').textContent = 'Gerado em ' + new Date().toLocaleString('pt-BR');
+    setStatus('relatorioStatus', 'Relatório gerado a partir dos dados salvos ✓');
+    return { texto, geral, inbound, sorting, outbound };
+  }catch(e){
+    setStatus('relatorioStatus', 'Erro ao gerar relatório: ' + e.message, true);
+    return null;
+  }
+}
+
+function copyReport(){
+  const texto = ultimoRelatorioGerado;
+  if(!texto){
+    setStatus('relatorioStatus', 'Gere o relatório primeiro.', true);
+    return;
+  }
+  navigator.clipboard.writeText(texto).then(()=>{
+    setStatus('relatorioStatus', 'Relatório copiado ✓');
+  }).catch(()=>{
+    setStatus('relatorioStatus', 'Não foi possível copiar automaticamente. Selecione o texto manualmente.', true);
+  });
+}
+
+/* ===================== Envio final ===================== */
+async function enviarAgoraViaGithub(){
+  if(!ghConfigured()){
+    setStatus('relatorioStatus', 'Configure o repositório e o token no topo da página primeiro.', true);
+    return;
+  }
+  const { owner, repo, branch, token } = getGithubSettings();
+
+  const resultado = await gerarRelatorioFinal();
+  if(!resultado) return;
+  const { texto, geral } = resultado;
+
+  const dataVal = g(geral,'data') ? formatarData(g(geral,'data')) : '—';
+  const turnoVal = g(geral,'turno') || '—';
+  const destino = g(geral,'emailDestino') || undefined; // se vazio, o script usa o secret MAIL_TO
+
+  const payload = {
+    texto,
+    destino,
+    assunto: `Passagem de Turno - ${dataVal} - ${turnoVal}`,
+    geradoEm: new Date().toISOString()
+  };
+
+  setStatus('relatorioStatus', 'Salvando relatório final no GitHub...');
+  try{
+    await ghPutJsonFile(owner, repo, 'data/relatorio-atual.json', branch, token, payload,
+      `Atualiza relatório de passagem de turno (${dataVal} - ${turnoVal})`);
+    setStatus('relatorioStatus', 'Disparando o envio via GitHub Actions...');
+    await ghDispatchWorkflow(owner, repo, branch, token);
+    setStatus('relatorioStatus', 'Workflow disparado ✓ — o e-mail será enviado em alguns segundos. Acompanhe na aba "Actions" do repositório.');
+  }catch(e){
+    setStatus('relatorioStatus', 'Erro ao enviar: ' + e.message, true);
+  }
+}
+
+/* ===================== Agendamento automático (data/config.json) ===================== */
+async function carregarAgendamento(){
+  if(!ghConfigured()){
+    setStatus('agendamentoStatus', 'Configure o repositório e o token no topo da página.', true);
+    return;
+  }
+  const { owner, repo, branch, token } = getGithubSettings();
+  setStatus('agendamentoStatus', 'Carregando agendamento salvo...');
+  try{
+    const config = await ghGetJsonFile(owner, repo, 'data/config.json', branch, token);
+    if(config){
+      document.getElementById('habilitarEnvioAuto').checked = !!config.habilitado;
+      document.getElementById('horarioEnvio').value = config.horario || '';
+      setStatus('agendamentoStatus', 'Agendamento carregado ✓');
+    } else {
+      setStatus('agendamentoStatus', 'Nenhum agendamento salvo ainda.');
+    }
+  }catch(e){
+    setStatus('agendamentoStatus', 'Erro ao carregar: ' + e.message, true);
+  }
+}
+
+async function salvarAgendamentoNoGithub(){
+  if(!ghConfigured()){
+    setStatus('agendamentoStatus', 'Configure o repositório e o token no topo da página.', true);
+    return;
+  }
+  const { owner, repo, branch, token } = getGithubSettings();
+  const habilitado = document.getElementById('habilitarEnvioAuto').checked;
+  const horario = v('horarioEnvio');
+
+  setStatus('agendamentoStatus', 'Salvando agendamento no GitHub...');
+  try{
+    await ghPutJsonFile(owner, repo, 'data/config.json', branch, token, { habilitado, horario },
+      'Atualiza configuração de envio automático da passagem de turno');
+    setStatus('agendamentoStatus', `Agendamento salvo ✓ (${habilitado ? 'habilitado às ' + (horario || '—') : 'desabilitado'})`);
+  }catch(e){
+    setStatus('agendamentoStatus', 'Erro ao salvar agendamento: ' + e.message, true);
+  }
+}
+
+/* ===================== Inicialização ===================== */
+window.addEventListener('DOMContentLoaded', () => {
+  initGithubSettingsUI();
+  tickClock();
+  setInterval(tickClock, 1000);
+  if(ghConfigured()){
+    atualizarStatusSetores();
+    carregarAgendamento();
+  } else {
+    ['geral','inbound','sorting','outbound'].forEach(k => {
+      document.getElementById('status-'+k).textContent = 'Configure o repositório e o token acima.';
+    });
+  }
+});
+</script>
+</body>
+</html>
