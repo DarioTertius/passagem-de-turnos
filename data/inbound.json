@@ -1,8 +1,8 @@
 {
   "fields": {
-    "veiculosRecebidos": "",
-    "pacotesRecebidos": "",
-    "absInbound": "",
+    "veiculosRecebidos": "12",
+    "pacotesRecebidos": "30000",
+    "absInbound": "10",
     "volumeTotalRecebido": "",
     "fmRecebidos": "",
     "lhRecebimento": "",
@@ -11,7 +11,9 @@
     "status5SInbound": ""
   },
   "lists": {
-    "list-ageCritico": [],
+    "list-ageCritico": [
+      "45"
+    ],
     "list-ruasPrioritarias": [],
     "list-ltsRecebidas": [],
     "list-docas": [],
@@ -20,5 +22,5 @@
     "list-ruasPrioridadeAGE": [],
     "list-pendenciasInbound": []
   },
-  "salvoEm": "2026-06-27T11:24:06.427Z"
+  "salvoEm": "2026-06-27T11:24:29.189Z"
 }
