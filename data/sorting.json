@@ -3,13 +3,13 @@
     "pacotesProcessados": "1003004",
     "absEsteiras": "5,0",
     "statusLona": "Operando",
-    "absLona": "",
-    "qtdPrevistaLona": "",
-    "qtdProcessadaLona": "",
-    "bufferShuttleLona": "",
-    "qtdRuasLona": "",
-    "status5SLona": "",
-    "statusTerm": "",
+    "absLona": "12",
+    "qtdPrevistaLona": "20203",
+    "qtdProcessadaLona": "203045",
+    "bufferShuttleLona": "2",
+    "qtdRuasLona": "345",
+    "status5SLona": "FEITO",
+    "statusTerm": "Parada",
     "absTerm": "",
     "qtdPrevistaTerm": "",
     "qtdProcessadaTerm": "",
@@ -21,5 +21,5 @@
   "lists": {
     "list-pendenciasSorting": []
   },
-  "salvoEm": "2026-06-27T11:29:09.397Z"
+  "salvoEm": "2026-06-27T11:29:35.620Z"
 }
