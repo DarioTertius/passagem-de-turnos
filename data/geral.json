@@ -1,9 +1,9 @@
 {
   "fields": {
     "data": "2026-06-27",
-    "turno": "",
-    "respT1": "",
-    "respT2": "",
+    "turno": "T1",
+    "respT1": "Thiago Vicente",
+    "respT2": "Rafael Justi",
     "absTotal": "",
     "observacoesGerais": "",
     "emailDestino": ""
@@ -12,5 +12,5 @@
     "list-planosAcao": [],
     "list-incidentesHSE": []
   },
-  "salvoEm": "2026-06-27T11:12:04.714Z"
+  "salvoEm": "2026-06-27T11:12:50.639Z"
 }
