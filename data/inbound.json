@@ -1,0 +1,24 @@
+{
+  "fields": {
+    "veiculosRecebidos": "",
+    "pacotesRecebidos": "",
+    "absInbound": "",
+    "volumeTotalRecebido": "",
+    "fmRecebidos": "",
+    "lhRecebimento": "",
+    "lhPendente": "",
+    "totalDocasAtivas": "",
+    "status5SInbound": ""
+  },
+  "lists": {
+    "list-ageCritico": [],
+    "list-ruasPrioritarias": [],
+    "list-ltsRecebidas": [],
+    "list-docas": [],
+    "list-ruasVazias": [],
+    "list-ruasAtreladas": [],
+    "list-ruasPrioridadeAGE": [],
+    "list-pendenciasInbound": []
+  },
+  "salvoEm": "2026-06-27T11:24:06.427Z"
+}
