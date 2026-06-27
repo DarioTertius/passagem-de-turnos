@@ -1,0 +1,25 @@
+{
+  "fields": {
+    "pacotesProcessados": "1003004",
+    "absEsteiras": "5,0",
+    "statusLona": "Operando",
+    "absLona": "",
+    "qtdPrevistaLona": "",
+    "qtdProcessadaLona": "",
+    "bufferShuttleLona": "",
+    "qtdRuasLona": "",
+    "status5SLona": "",
+    "statusTerm": "",
+    "absTerm": "",
+    "qtdPrevistaTerm": "",
+    "qtdProcessadaTerm": "",
+    "bufferShuttleTerm": "",
+    "qtdRuasTerm": "",
+    "status5STerm": "",
+    "obsSorting": ""
+  },
+  "lists": {
+    "list-pendenciasSorting": []
+  },
+  "salvoEm": "2026-06-27T11:29:09.397Z"
+}
