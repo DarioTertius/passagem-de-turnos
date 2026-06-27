@@ -8,7 +8,7 @@
     "lhRecebimento": "Nenhuma",
     "lhPendente": "Nenhuma",
     "totalDocasAtivas": "7",
-    "status5SInbound": ""
+    "status5SInbound": "CONFORMEU"
   },
   "lists": {
     "list-ageCritico": [],
@@ -20,9 +20,11 @@
       "Doca 107-108-122-123-124-125-126"
     ],
     "list-ruasVazias": [],
-    "list-ruasAtreladas": [],
+    "list-ruasAtreladas": [
+      "TERMOPLASTICA-37-46"
+    ],
     "list-ruasPrioridadeAGE": [],
     "list-pendenciasInbound": []
   },
-  "salvoEm": "2026-06-27T14:55:24.352Z"
+  "salvoEm": "2026-06-27T14:56:29.709Z"
 }
